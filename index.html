@@ -57,7 +57,7 @@
   .rows{position:relative}
   .vlines{position:absolute;top:0;bottom:0;left:var(--labelw);right:0;pointer-events:none}
   .vlines .vl{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
-  .row{display:flex;align-items:center;height:42px;position:relative;z-index:1}
+  .row{display:flex;align-items:center;height:48px;position:relative;z-index:1}
   .row:nth-child(even){background:#fafbfd}
   .row .label{width:var(--labelw);flex:0 0 var(--labelw);font-size:13px;font-weight:600;padding-right:16px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .track{position:relative;flex:1;height:100%}
@@ -65,7 +65,11 @@
   .bar:hover{transform:translateY(-50%) scale(1.012);z-index:5}
   .bar .txt{font-size:11px;font-weight:600;color:#fff;padding:0 9px;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.18)}
   .bar.beta{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 7px,transparent 7px 14px);background-blend-mode:overlay}
+  /* phase-gate diamond at bar end (hollow) */
   .ms{position:absolute;top:50%;width:11px;height:11px;transform:translate(-50%,-50%) rotate(45deg);background:#fff;border:2px solid var(--ink);z-index:4}
+  /* user milestone marker on the bar (filled) */
+  .mmark{position:absolute;top:50%;width:11px;height:11px;transform:translate(-50%,-50%) rotate(45deg);background:#1e293b;border:2px solid #fff;z-index:8;cursor:help;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .mlabel{position:absolute;bottom:calc(50% + 15px);transform:translateX(-50%);font-size:9px;font-weight:700;color:#334155;white-space:nowrap;background:rgba(255,255,255,.92);padding:1px 5px;border-radius:5px;z-index:8;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.12)}
   .today{position:absolute;top:-4px;bottom:0;width:2px;background:var(--today);z-index:6}
   .today::before{content:"TODAY";position:absolute;top:-2px;left:50%;transform:translateX(-50%);background:var(--today);color:#fff;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:4px;letter-spacing:.5px;white-space:nowrap}
 
@@ -75,7 +79,7 @@
   .editor h2 .hint{font-size:11.5px;font-weight:500;color:var(--muted)}
   table{width:100%;border-collapse:collapse;font-size:12.5px}
   th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;border-bottom:1px solid var(--line)}
-  td{padding:4px 8px;border-bottom:1px solid var(--line)}
+  td{padding:4px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
   td input,td select{font-family:inherit;font-size:12.5px;border:1px solid transparent;background:transparent;color:var(--ink);padding:5px 6px;border-radius:6px;width:100%}
   td input:focus,td select:focus{outline:none;border-color:#6366f1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
   td input[type=date]{min-width:130px}
@@ -84,6 +88,18 @@
   .iconbtn{border:none;background:transparent;color:#cbd3e0;font-size:16px;line-height:1;padding:4px 6px;cursor:pointer;border-radius:6px}
   .iconbtn:hover{background:#fef2f2;color:#dc2626}
   .swatch{width:12px;height:12px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:5px}
+  .msbtn{border:1px solid var(--line-strong);background:#fff;color:#475569;font-size:11px;font-weight:600;padding:4px 9px;border-radius:7px;white-space:nowrap}
+  .msbtn:hover{background:#f4f6fb}
+  .msbtn .cnt{display:inline-block;min-width:15px;height:15px;line-height:15px;text-align:center;background:#1e293b;color:#fff;border-radius:8px;font-size:9px;margin-left:5px;padding:0 3px}
+  /* milestone sub-editor */
+  .msrow td{background:#f8fafc;padding:10px 14px 12px 40px}
+  .mstitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+  .msline{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .msline .di{flex:0 0 150px}
+  .msline .ti{flex:1}
+  .msline input{border:1px solid var(--line-strong)!important;background:#fff!important;padding:6px 8px;border-radius:7px}
+  .msline input:focus{border-color:#6366f1!important}
+  .msempty{font-size:12px;color:#94a3b8;margin-bottom:8px}
 
   footer{padding:18px 38px 26px;border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;line-height:1.6}
   footer b{color:var(--ink)}
@@ -103,8 +119,7 @@
   <header>
     <div class="titlebar">
       <div>
-        <h1>Product Rollout Roadmap</h1>
-        <div class="sub">Pilot &rarr; Beta &rarr; GA across product streams</div>
+        <h1>Coupang Project Tracker</h1>
       </div>
       <div class="toolbar">
         <span class="saved" id="saved">Saved &#10003;</span>
@@ -126,10 +141,10 @@
   </div>
 
   <div class="editor">
-    <h2>Edit timeline <span class="hint">&mdash; type to edit, changes save automatically &amp; redraw above</span></h2>
+    <h2>Edit timeline <span class="hint">&mdash; type to edit; click &#9670; Milestones to add markers on a bar. Changes save automatically &amp; redraw above.</span></h2>
     <table>
       <thead>
-        <tr><th>Item</th><th>Stream</th><th>Phase</th><th>Start</th><th>End</th><th></th></tr>
+        <tr><th>Item</th><th>Stream</th><th>Start</th><th>End</th><th>Milestones</th><th></th></tr>
       </thead>
       <tbody id="ebody"></tbody>
     </table>
@@ -137,9 +152,7 @@
   </div>
 
   <footer>
-    <b>Reading the chart:</b> solid bars = Pilot, hatched bars = Beta. The diamond at each bar's end marks a phase gate / Definition of Done. &nbsp;
-    <b>Gates:</b> Pilot end &rarr; <i>"Announce beta &amp; expand to GWJ2, ANS4, TOW5"</i> &middot; Beta end &rarr; <i>"Announce GA &mdash; full deployment."</i><br>
-    <b>Note:</b> "Users training" had no start date in the source; assumed 6/23/2026 (after Basic configuration). Edits are stored in this browser; use Export to share a file.
+    <b>Milestone key:</b> T0 &mdash; Deliver 10 insights &nbsp;&middot;&nbsp; T1 &mdash; Beta launch &nbsp;&middot;&nbsp; T2 &mdash; GA launch
   </footer>
 </div>
 
@@ -155,26 +168,39 @@ const STREAMS = {
 function cssVar(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
 const DEFAULTS = [
-  {label:"Basic configuration", stream:"setup",  phase:"pilot", start:"2026-06-11", end:"2026-06-23"},
-  {label:"Users training",      stream:"setup",  phase:"pilot", start:"2026-06-23", end:"2026-06-25"},
-  {label:"HVHR pilot",          stream:"hvhr",   phase:"pilot", start:"2026-06-25", end:"2026-10-01"},
-  {label:"HVHR beta",           stream:"hvhr",   phase:"beta",  start:"2026-10-01", end:"2027-01-01"},
-  {label:"PQV pilot",           stream:"pqv",    phase:"pilot", start:"2026-08-01", end:"2026-11-01"},
-  {label:"PQV beta",            stream:"pqv",    phase:"beta",  start:"2026-11-01", end:"2027-02-01"},
-  {label:"ISM pilot",           stream:"ism",    phase:"pilot", start:"2026-09-01", end:"2026-12-01"},
-  {label:"ISM beta",            stream:"ism",    phase:"beta",  start:"2026-12-01", end:"2027-03-01"},
-  {label:"Shrink Hotspots pilot",stream:"shrink",phase:"pilot", start:"2026-10-01", end:"2027-01-01"},
-  {label:"Shrink Hotspots beta", stream:"shrink",phase:"beta",  start:"2027-01-01", end:"2027-04-01"},
-  {label:"Dwell Time pilot",    stream:"dwell",  phase:"pilot", start:"2026-11-01", end:"2027-02-01"},
-  {label:"Dwell Time beta",     stream:"dwell",  phase:"beta",  start:"2027-02-01", end:"2027-05-01"},
+  {label:"Basic configuration", stream:"setup",  phase:"pilot", start:"2026-06-11", end:"2026-06-23", milestones:[]},
+  {label:"Users training",      stream:"setup",  phase:"pilot", start:"2026-06-23", end:"2026-06-25", milestones:[]},
+  {label:"HVHR pilot",          stream:"hvhr",   phase:"pilot", start:"2026-06-25", end:"2026-10-01", milestones:[]},
+  {label:"HVHR beta",           stream:"hvhr",   phase:"beta",  start:"2026-10-01", end:"2027-01-01", milestones:[]},
+  {label:"PQV pilot",           stream:"pqv",    phase:"pilot", start:"2026-08-01", end:"2026-11-01", milestones:[]},
+  {label:"PQV beta",            stream:"pqv",    phase:"beta",  start:"2026-11-01", end:"2027-02-01", milestones:[]},
+  {label:"ISM pilot",           stream:"ism",    phase:"pilot", start:"2026-09-01", end:"2026-12-01", milestones:[]},
+  {label:"ISM beta",            stream:"ism",    phase:"beta",  start:"2026-12-01", end:"2027-03-01", milestones:[]},
+  {label:"Shrink Hotspots pilot",stream:"shrink",phase:"pilot", start:"2026-10-01", end:"2027-01-01", milestones:[]},
+  {label:"Shrink Hotspots beta", stream:"shrink",phase:"beta",  start:"2027-01-01", end:"2027-04-01", milestones:[]},
+  {label:"Dwell Time pilot",    stream:"dwell",  phase:"pilot", start:"2026-11-01", end:"2027-02-01", milestones:[]},
+  {label:"Dwell Time beta",     stream:"dwell",  phase:"beta",  start:"2027-02-01", end:"2027-05-01", milestones:[]},
 ];
 const TODAY = "2026-06-16";
-const KEY = "roadmapGantt.v1";
+const KEY = "roadmapGantt.v2";
 
 let TASKS = load();
+const openMs = new Set();   // editor rows with milestone panel expanded
+
+// one-time cleanup: wipe milestones that were jamming the timeline
+try{
+  if(!localStorage.getItem('roadmapGantt.msReset1')){
+    TASKS.forEach(t=>{t.milestones=[];});
+    localStorage.setItem('roadmapGantt.msReset1','1');
+    localStorage.setItem(KEY,JSON.stringify(TASKS));
+  }
+}catch(e){}
 
 function load(){
-  try{const s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}
+  // read current key, fall back to older key so saved data survives version bumps
+  for(const k of [KEY,"roadmapGantt.v1"]){
+    try{const s=localStorage.getItem(k);if(s){const d=JSON.parse(s);d.forEach(t=>{if(!t.milestones)t.milestones=[];});return d;}}catch(e){}
+  }
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
 function save(){
@@ -198,7 +224,6 @@ function render(){
   const SPAN=T1-T0;
   const pct=d=>((new Date(d)-T0)/SPAN)*100;
 
-  // months
   const months=[];let c=new Date(T0);
   while(c<T1){months.push(new Date(c));c.setMonth(c.getMonth()+1);}
   const mEl=document.getElementById('months');mEl.innerHTML='';
@@ -224,28 +249,39 @@ function render(){
       const txt=document.createElement('span');txt.className='txt';
       txt.textContent=t.stream==='setup'?'':(t.phase==='beta'?'Beta':'Pilot');
       bar.appendChild(txt);track.appendChild(bar);
+      // phase gate diamond
       const ms=document.createElement('div');ms.className='ms';ms.style.left=right+'%';
       ms.style.borderColor=(STREAMS[t.stream]||{}).color||'#94a3b8';
       ms.title=t.phase==='beta'?'Gate: Announce GA — full deployment':'Gate: Announce beta & expand to GWJ2, ANS4, TOW5';
       track.appendChild(ms);
+      // user milestones on the bar
+      (t.milestones||[]).forEach(m=>{
+        if(!m.date)return;
+        const x=pct(m.date);
+        const mk=document.createElement('div');mk.className='mmark';mk.style.left=x+'%';
+        mk.title=(m.label?m.label+' — ':'')+fmt(m.date);
+        track.appendChild(mk);
+        if(m.label){const lb=document.createElement('div');lb.className='mlabel';lb.style.left=x+'%';lb.textContent=m.label;track.appendChild(lb);}
+      });
     }
     row.appendChild(lab);row.appendChild(track);rowsEl.appendChild(row);
   });
 
-  // today line
   if(TODAY>=fmtISO(T0)&&TODAY<=fmtISO(T1)){
     const tline=document.createElement('div');tline.className='today';
     tline.style.left=`calc(190px + ${pct(TODAY)/100} * (100% - 190px))`;
     rowsEl.appendChild(tline);
   }
 
-  // legend
   const lg=document.getElementById('legend');lg.innerHTML='';
   Object.values(STREAMS).forEach(s=>{const el=document.createElement('span');
     el.innerHTML=`<span class="dot" style="background:${s.color}"></span>${s.name}`;lg.appendChild(el);});
   const ph=document.createElement('span');
   ph.innerHTML=`<span class="dot" style="background:#94a3b8;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.5) 0 4px,transparent 4px 8px)"></span>Beta (hatched)`;
   lg.appendChild(ph);
+  const mi=document.createElement('span');
+  mi.innerHTML=`<span class="dot" style="width:11px;height:11px;background:#1e293b;transform:rotate(45deg);border:2px solid #fff"></span>Milestone`;
+  lg.appendChild(mi);
 }
 
 // ---- editor table --------------------------------------------------
@@ -255,24 +291,46 @@ function renderEditor(){
     const tr=document.createElement('tr');
     const streamOpts=Object.entries(STREAMS).map(([k,v])=>
       `<option value="${k}" ${t.stream===k?'selected':''}>${v.name}</option>`).join('');
+    const n=(t.milestones||[]).length;
     tr.innerHTML=`
       <td class="lbl"><input value="${esc(t.label)}" oninput="upd(${i},'label',this.value)"></td>
       <td><span class="swatch" style="background:${(STREAMS[t.stream]||{}).color||'#94a3b8'}"></span>
           <select onchange="upd(${i},'stream',this.value)" style="width:auto;display:inline-block">${streamOpts}</select></td>
-      <td><select onchange="upd(${i},'phase',this.value)">
-          <option value="pilot" ${t.phase==='pilot'?'selected':''}>Pilot</option>
-          <option value="beta" ${t.phase==='beta'?'selected':''}>Beta</option></select></td>
-      <td><input type="date" value="${t.start||''}" onchange="upd(${i},'start',this.value)"></td>
-      <td><input type="date" value="${t.end||''}" onchange="upd(${i},'end',this.value)"></td>
-      <td class="act"><button class="iconbtn" title="Delete" onclick="delRow(${i})">&times;</button></td>`;
+      <td><input type="date" min="2010-01-01" max="2040-12-31" value="${t.start||''}" onchange="upd(${i},'start',this.value)"></td>
+      <td><input type="date" min="2010-01-01" max="2040-12-31" value="${t.end||''}" onchange="upd(${i},'end',this.value)"></td>
+      <td><button class="msbtn" onclick="toggleMs(${i})">&#9670; Milestones${n?`<span class="cnt">${n}</span>`:''}</button></td>
+      <td class="act"><button class="iconbtn" title="Delete item" onclick="delRow(${i})">&times;</button></td>`;
     tb.appendChild(tr);
+
+    if(openMs.has(i)){
+      const sub=document.createElement('tr');sub.className='msrow';
+      const td=document.createElement('td');td.colSpan=6;
+      let html=`<div class="mstitle">Milestones on &ldquo;${esc(t.label)}&rdquo;</div>`;
+      if(!n) html+=`<div class="msempty">No milestones yet. Add one below &mdash; it appears as a diamond on the bar at its date.</div>`;
+      (t.milestones||[]).forEach((m,j)=>{
+        html+=`<div class="msline">
+          <input class="di" type="date" min="2010-01-01" max="2040-12-31" value="${m.date||''}" onchange="updMs(${i},${j},'date',this.value)">
+          <input class="ti" type="text" placeholder="Milestone label (e.g. Security review)" value="${esc(m.label)}" oninput="updMs(${i},${j},'label',this.value)">
+          <button class="iconbtn" title="Remove milestone" onclick="delMs(${i},${j})">&times;</button>
+        </div>`;
+      });
+      html+=`<button class="msbtn" style="margin-top:4px" onclick="addMs(${i})">+ Add milestone</button>`;
+      td.innerHTML=html;sub.appendChild(td);tb.appendChild(sub);
+    }
   });
 }
 
-function upd(i,key,val){TASKS[i][key]=val;save();render();if(key==='stream')renderEditor();}
-function addRow(){TASKS.push({label:"New item",stream:"setup",phase:"pilot",start:"",end:""});save();render();renderEditor();}
-function delRow(i){TASKS.splice(i,1);save();render();renderEditor();}
-function resetData(){if(confirm("Reset to the original list? Your edits will be lost.")){TASKS=JSON.parse(JSON.stringify(DEFAULTS));save();render();renderEditor();}}
+function clampDate(v){if(!v)return v;const y=+v.slice(0,4);if(y<2010)return '2010'+v.slice(4);if(y>2040)return '2040'+v.slice(4);return v;}
+function upd(i,key,val){if(key==='start'||key==='end')val=clampDate(val);TASKS[i][key]=val;save();render();if(key==='start'||key==='end')renderEditor();}
+function addRow(){TASKS.push({label:"New item",stream:"setup",phase:"pilot",start:"",end:"",milestones:[]});save();render();renderEditor();}
+function delRow(i){TASKS.splice(i,1);openMs.delete(i);save();render();renderEditor();}
+
+function toggleMs(i){if(openMs.has(i))openMs.delete(i);else openMs.add(i);renderEditor();}
+function addMs(i){if(!TASKS[i].milestones)TASKS[i].milestones=[];TASKS[i].milestones.push({date:TASKS[i].start||"",label:""});openMs.add(i);save();render();renderEditor();}
+function updMs(i,j,key,val){if(key==='date')val=clampDate(val);TASKS[i].milestones[j][key]=val;save();render();if(key==='date')renderEditor();}
+function delMs(i,j){TASKS[i].milestones.splice(j,1);save();render();renderEditor();}
+
+function resetData(){if(confirm("Reset to the original list? Your edits and milestones will be lost.")){TASKS=JSON.parse(JSON.stringify(DEFAULTS));openMs.clear();save();render();renderEditor();}}
 
 function exportJSON(){
   const blob=new Blob([JSON.stringify(TASKS,null,2)],{type:'application/json'});
@@ -282,7 +340,7 @@ function exportJSON(){
 function importJSON(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);
-    if(Array.isArray(d)){TASKS=d;save();render();renderEditor();}else alert('Invalid file.');
+    if(Array.isArray(d)){d.forEach(t=>{if(!t.milestones)t.milestones=[];});TASKS=d;openMs.clear();save();render();renderEditor();}else alert('Invalid file.');
   }catch(err){alert('Could not read file.');}};r.readAsText(f);e.target.value='';
 }
 
