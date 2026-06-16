@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Rollout Roadmap</title>
+<title>Coupang Project Tracker</title>
 <style>
   :root{
     --panel:#ffffff;
@@ -168,18 +168,13 @@ const STREAMS = {
 function cssVar(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
 const DEFAULTS = [
-  {label:"Basic configuration", stream:"setup",  phase:"pilot", start:"2026-06-11", end:"2026-06-23", milestones:[]},
-  {label:"Users training",      stream:"setup",  phase:"pilot", start:"2026-06-23", end:"2026-06-25", milestones:[]},
-  {label:"HVHR pilot",          stream:"hvhr",   phase:"pilot", start:"2026-06-25", end:"2026-10-01", milestones:[]},
-  {label:"HVHR beta",           stream:"hvhr",   phase:"beta",  start:"2026-10-01", end:"2027-01-01", milestones:[]},
-  {label:"PQV pilot",           stream:"pqv",    phase:"pilot", start:"2026-08-01", end:"2026-11-01", milestones:[]},
-  {label:"PQV beta",            stream:"pqv",    phase:"beta",  start:"2026-11-01", end:"2027-02-01", milestones:[]},
-  {label:"ISM pilot",           stream:"ism",    phase:"pilot", start:"2026-09-01", end:"2026-12-01", milestones:[]},
-  {label:"ISM beta",            stream:"ism",    phase:"beta",  start:"2026-12-01", end:"2027-03-01", milestones:[]},
-  {label:"Shrink Hotspots pilot",stream:"shrink",phase:"pilot", start:"2026-10-01", end:"2027-01-01", milestones:[]},
-  {label:"Shrink Hotspots beta", stream:"shrink",phase:"beta",  start:"2027-01-01", end:"2027-04-01", milestones:[]},
-  {label:"Dwell Time pilot",    stream:"dwell",  phase:"pilot", start:"2026-11-01", end:"2027-02-01", milestones:[]},
-  {label:"Dwell Time beta",     stream:"dwell",  phase:"beta",  start:"2027-02-01", end:"2027-05-01", milestones:[]},
+  {label:"Basic configuration", stream:"setup", phase:"pilot", start:"2026-06-11", end:"2026-06-23", milestones:[]},
+  {label:"Users training",      stream:"setup", phase:"pilot", start:"2026-06-25", end:"2026-06-25", milestones:[]},
+  {label:"HVHR",   stream:"hvhr",   phase:"beta", start:"2026-06-25", end:"2026-09-01", milestones:[{date:"2026-06-25",label:"T0"},{date:"2026-07-01",label:"T1"},{date:"2026-09-01",label:"T2"}]},
+  {label:"PQV",    stream:"pqv",    phase:"beta", start:"2026-08-01", end:"2026-10-01", milestones:[{date:"2026-08-01",label:"T0"},{date:"2026-08-06",label:"T1"},{date:"2026-10-01",label:"T2"}]},
+  {label:"ISM",    stream:"ism",    phase:"beta", start:"2026-09-01", end:"2026-11-01", milestones:[{date:"2026-09-01",label:"T0"},{date:"2026-09-08",label:"T1"},{date:"2026-11-01",label:"T2"}]},
+  {label:"Shrink Hotspots", stream:"shrink", phase:"beta", start:"2026-10-01", end:"2026-12-01", milestones:[{date:"2026-10-01",label:"T0"},{date:"2026-10-08",label:"T1"},{date:"2026-12-01",label:"T2"}]},
+  {label:"Dwell Time", stream:"dwell", phase:"beta", start:"2026-11-01", end:"2027-01-01", milestones:[{date:"2026-11-01",label:"T0"},{date:"2026-11-08",label:"T1"},{date:"2027-01-01",label:"T2"}]},
 ];
 const TODAY = "2026-06-16";
 const KEY = "roadmapGantt.v2";
@@ -187,14 +182,6 @@ const KEY = "roadmapGantt.v2";
 let TASKS = load();
 const openMs = new Set();   // editor rows with milestone panel expanded
 
-// one-time cleanup: wipe milestones that were jamming the timeline
-try{
-  if(!localStorage.getItem('roadmapGantt.msReset1')){
-    TASKS.forEach(t=>{t.milestones=[];});
-    localStorage.setItem('roadmapGantt.msReset1','1');
-    localStorage.setItem(KEY,JSON.stringify(TASKS));
-  }
-}catch(e){}
 
 function load(){
   // read current key, fall back to older key so saved data survives version bumps
